@@ -1,0 +1,13 @@
+comport str COM3
+
+factor_speed                flt   5.45			
+factor_engine_rpm           flt   0.095
+factor_brake_air_pressure   flt   1.25
+factor_brake_temperature    flt   1
+factor_fuel_ratio           flt 250.0
+factor_oil_pressure         flt   1
+factor_oil_temperature      flt   1.8
+factor_water_temperature    flt   1.6
+factor_battery_voltage      flt   1
+factor_cruise_control		flt   1
+factor_adblue_ratio			flt 250.0

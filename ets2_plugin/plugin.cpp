@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <stdarg.h>
 #include <sstream>
+#include <string>
 
 #include <scssdk_telemetry.h>
 #include <eurotrucks2/scssdk_telemetry_eut2.h>
@@ -65,7 +66,6 @@ unsigned char packet[PACKET_MAX_SIZE];
   ((unsigned char)(C) << 5) | ((unsigned char)(D) << 4) | \
   ((unsigned char)(E) << 3) | ((unsigned char)(F) << 2) | \
   ((unsigned char)(G) << 1) | ((unsigned char)(H)))
-
 
 // Telemetry data
 struct telemetry_state_t
@@ -119,6 +119,11 @@ struct telemetry_state_t
   float adblue_average_consumption; // Liters / KM
   float adblue_capacity; // Liters
 
+  bool wipers; // limpiaparabrisas
+  bool dashboard_backlight; // iluminacion dashboard
+//  float wheel_lift; // rueda arriba o abajo añadirlo a lectura
+//  float wheel_lift; pero se tiene que leer del trailer
+
 } telemetry;
 
 
@@ -139,56 +144,62 @@ void send_empty_packet()
   packet[0] = PACKET_SYNC;
   packet[1] = PACKET_VER;
   
-  serial_port.write(packet, 19);
+  serial_port.write(packet, 17);// si no funcioona odometer aqui 17
 }
 
-SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void *const /*event_info*/, const scs_context_t /*context*/)
+
+SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /*event_info*/, const scs_context_t /*context*/)
 {
-  if (!serial_port.is_valid())
-    return;
-    
-  const unsigned long now = GetTickCount();
-  const unsigned long diff = now - last_update;
-  if (diff < 50)
-    return;
-    
-  last_update = now;
-  
-  const float speed_mph = telemetry.speed * METERS_PER_SEC_TO_MILES_PER_HOUR;
-  const float speed_kph = telemetry.speed * METERS_PER_SEC_TO_KM_PER_HOUR;
-  
-  const float fuel_ratio = telemetry.fuel /  telemetry.fuel_capacity;
-  const float adblue_ratio = telemetry.adblue / telemetry.adblue_capacity;
+    if (!serial_port.is_valid())
+        return;
+
+    const unsigned long now = GetTickCount();
+    const unsigned long diff = now - last_update;
+    if (diff < 50)
+        return;
+
+    last_update = now;
+
+    const float speed_mph = telemetry.speed * METERS_PER_SEC_TO_MILES_PER_HOUR;
+    const float speed_kph = telemetry.speed * METERS_PER_SEC_TO_KM_PER_HOUR;
+
+    const float fuel_ratio = telemetry.fuel / telemetry.fuel_capacity;
+    const float adblue_ratio = telemetry.adblue / telemetry.adblue_capacity;
 
 
-  
-  unsigned idx = 0;
-  
-  memset(packet, 0, PACKET_MAX_SIZE);
-  
+
+    unsigned idx = 0;
+
+    memset(packet, 0, PACKET_MAX_SIZE);
+
 #define PUT_BYTE(X) packet[idx++] = (unsigned char)(X)
 #define PUT_BYTE_FLOAT(X) packet[idx++] = (unsigned char)(float_to_byte(X))
 #define GETFLTOPT(X) (option_file.get_option_float(X, 1.0f))
-  
-  // Packet header
-  PUT_BYTE(PACKET_SYNC);
-  PUT_BYTE(PACKET_VER);
-  
-  // Convert data for output by servos
-  // Adjust the constant values to map to servo range
-  
-  PUT_BYTE_FLOAT(fabs(telemetry.speed) *        GETFLTOPT("factor_speed")); // Absolute value for when reversing
-  PUT_BYTE_FLOAT(telemetry.engine_rpm *         GETFLTOPT("factor_engine_rpm"));
-  PUT_BYTE_FLOAT(telemetry.brake_air_pressure * GETFLTOPT("factor_brake_air_pressure"));
-  PUT_BYTE_FLOAT(telemetry.brake_temperature *  GETFLTOPT("factor_brake_temperature"));
-  PUT_BYTE_FLOAT(fuel_ratio *                   GETFLTOPT("factor_fuel_ratio")); // Fuel level
-  PUT_BYTE_FLOAT(telemetry.oil_pressure *       GETFLTOPT("factor_oil_pressure"));
-  PUT_BYTE_FLOAT(telemetry.oil_temperature *    GETFLTOPT("factor_oil_temperature"));
-  PUT_BYTE_FLOAT(telemetry.water_temperature *  GETFLTOPT("factor_water_temperature"));
-  PUT_BYTE_FLOAT(telemetry.battery_voltage *    GETFLTOPT("factor_battery_voltage"));
-  PUT_BYTE_FLOAT(telemetry.cruise_control *     GETFLTOPT("factor_cruise_control"));
-  PUT_BYTE_FLOAT(adblue_ratio *                 GETFLTOPT("factor_adblue_ratio")); // adblue level
 
+    // Packet header
+    PUT_BYTE(PACKET_SYNC);
+    PUT_BYTE(PACKET_VER);
+
+
+    
+    // Convert data for output by servos
+    // Adjust the constant values to map to servo range
+
+    PUT_BYTE_FLOAT(fabs(telemetry.speed) * GETFLTOPT("factor_speed")); // Absolute value for when reversing
+    PUT_BYTE_FLOAT(telemetry.engine_rpm * GETFLTOPT("factor_engine_rpm"));
+    PUT_BYTE_FLOAT(telemetry.brake_air_pressure * GETFLTOPT("factor_brake_air_pressure"));
+    PUT_BYTE_FLOAT(telemetry.brake_temperature * GETFLTOPT("factor_brake_temperature"));
+    PUT_BYTE_FLOAT(fuel_ratio * GETFLTOPT("factor_fuel_ratio")); // Fuel level
+    PUT_BYTE_FLOAT(telemetry.oil_pressure * GETFLTOPT("factor_oil_pressure"));
+    PUT_BYTE_FLOAT(telemetry.oil_temperature * GETFLTOPT("factor_oil_temperature"));
+    PUT_BYTE_FLOAT(telemetry.water_temperature * GETFLTOPT("factor_water_temperature"));
+    PUT_BYTE_FLOAT(telemetry.battery_voltage * GETFLTOPT("factor_battery_voltage"));
+    PUT_BYTE_FLOAT(telemetry.cruise_control * GETFLTOPT("factor_cruise_control"));
+    PUT_BYTE_FLOAT(adblue_ratio * GETFLTOPT("factor_adblue_ratio")); // adblue level
+
+
+
+  
   // Pack data for LEDs into bytes
   
   // Truck lights
@@ -208,21 +219,36 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void *const /
   
   // Enabled flags
   PUT_BYTE(PACKBOOL(
-    0,0,0,0,0, telemetry.adblue_warning,
+    0,0,0,telemetry.dashboard_backlight,
+    telemetry.wipers, telemetry.adblue_warning,
     telemetry.electric_enabled, telemetry.engine_enabled));
     
 
-  // Build string for LCD display
+  // para tratar de que funcione el odometro en 6 bytes
+
+  std::stringstream ss;
+  ss.width(3);
+  ss << int(telemetry.odometer);
+  
+  std::string display_str(ss.str());
+
+  // Write length of string
+  PUT_BYTE(display_str.size());
+  // Followed by string
+  display_str.copy((char*)&packet[idx], PACKET_MAX_SIZE - idx);
+  idx += display_str.size();
+
+  /*// Build string for LCD display
     
   std::stringstream ss;
   
   ss.width(3);
-  /* ss << abs(int(speed_mph));
+   ss << abs(int(speed_mph));
   ss << " MPH";
   
-  ss << "   G  "; */
+  ss << "   G  "; 
   
-  /* if (telemetry.engine_gear > 0)
+   if (telemetry.engine_gear > 0)
   {
     ss << "D";
     ss.width(2);
@@ -252,7 +278,7 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void *const /
   
   
   ss.width(3);
-  ss << abs(int(speed_kph)); */
+  ss << abs(int(speed_kph)); 
   
   //ss << int(telemetry.engine_gear);
   
@@ -379,7 +405,7 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void *const /
   PUT_BYTE(display_str.size());
   // Followed by string
   display_str.copy((char*)&packet[idx], PACKET_MAX_SIZE - idx);
-  idx += display_str.size();
+  idx += display_str.size();*/
   
   
   serial_port.write(packet, idx);
@@ -440,7 +466,7 @@ void get_cwd(std::string& str)
 
 SCSAPI_RESULT scs_telemetry_init(const scs_u32_t version, const scs_telemetry_init_params_t *const params)
 {
-	if (version != SCS_TELEMETRY_VERSION_1_01) {
+	if (version != SCS_TELEMETRY_VERSION_1_00) {
 		return SCS_RESULT_unsupported;
 	}
 
@@ -521,8 +547,12 @@ SCSAPI_RESULT scs_telemetry_init(const scs_u32_t version, const scs_telemetry_in
   REG_CHAN(cruise_control,                float); //added
   REG_CHAN(light_beacon,                  bool);
   REG_CHAN(adblue,                        float);
-  //REG_CHAN(adblue_average_consumption,    float);
+//  REG_CHAN(adblue_average_consumption, float);
+
   REG_CHAN(adblue_warning,                bool);
+  REG_CHAN(wipers,                        bool);
+//  REG_CHAN(dashboard_backlight,           float);
+
 
   if (!registered)
   {

@@ -16,9 +16,10 @@ set OPTIONS=/nologo /W4 /LD /MD /EHsc /O2
 
 cl %OPTIONS% /I%SDK_INC_DIR% %SRC_FILES% /link /OUT:dash_plugin.dll
 
-xcopy dash_plugin.dll "%INSTALL_DIR%" /D
-xcopy dash_plugin.dll "%INSTALL_DIR2%" /D
-
+xcopy dash_plugin.dll "%INSTALL_DIR%" /D /Y
+xcopy dash_plugin.txt "%INSTALL_DIR%" /D /Y
+xcopy dash_plugin.dll "%INSTALL_DIR2%" /D /Y
+xcopy dash_plugin.txt "%INSTALL_DIR2%" /D /Y
 
 
 
