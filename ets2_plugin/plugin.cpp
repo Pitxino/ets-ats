@@ -58,8 +58,11 @@ unsigned long last_update = 0;
 #define PACKET_SYNC 0xFF
 #define PACKET_VER  2
 
+
 unsigned char packet[PACKET_MAX_SIZE];
 
+unsigned int cuentakilometros;
+unsigned int resultado;
 
 #define PACKBOOL(A,B,C,D,E,F,G,H) \
   (((unsigned char)(A) << 7) | ((unsigned char)(B) << 6) | \
@@ -144,7 +147,7 @@ void send_empty_packet()
   packet[0] = PACKET_SYNC;
   packet[1] = PACKET_VER;
   
-  serial_port.write(packet, 17);// si no funcioona odometer aqui 17
+  serial_port.write(packet, 23);// si no funcioona odometer aqui 17
 }
 
 
@@ -225,6 +228,25 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /
     
 
   // para tratar de que funcione el odometro en 6 bytes
+
+  cuentakilometros = telemetry.odometer;                                              //     259451
+  resultado = cuentakilometros / 100000;      //     2
+  PUT_BYTE(resultado);                          //  grabamos 2
+  cuentakilometros = cuentakilometros - (resultado * 100000);   // cuentakilometros = 59451
+  resultado = cuentakilometros / 10000;       //      5
+  PUT_BYTE(resultado);                          //  grabamos 5
+  cuentakilometros = cuentakilometros - (resultado * 10000);    // cuentakilometros = 9451
+  resultado = cuentakilometros / 1000;        //      9
+  PUT_BYTE(resultado);                          //  grabamos 9
+  cuentakilometros = cuentakilometros - (resultado * 1000);    // cuentakilometros = 451
+  resultado = cuentakilometros / 100;         //      4
+  PUT_BYTE(resultado);                          //  grabamos 4
+  cuentakilometros = cuentakilometros - (resultado * 100);    // cuentakilometros = 51
+  resultado = cuentakilometros / 10;          //      5
+  PUT_BYTE(resultado);                          //  grabamos 5
+  cuentakilometros = cuentakilometros - (resultado * 100);    // cuentakilometros = 1
+  resultado = cuentakilometros;
+  PUT_BYTE(resultado);                          //  grabamos 1
 
   std::stringstream ss;
   ss.width(3);
