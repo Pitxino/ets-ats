@@ -1,11 +1,10 @@
 
 
-
 #include <Adafruit_NeoPixel.h>
 #include <SwitecX25.h>
 //#include "TM1637_6D.h"
 #include "TM1637.h"
-
+//#include <TM1637TinyDisplay6.h>
 
 
 // leds 1
@@ -91,11 +90,11 @@ SwitecX25 cruise;*/
 #define NUMPIXELS   49 // Popular NeoPixel ring size
 Adafruit_NeoPixel pixels(NUMPIXELS, LEDS, NEO_GRB + NEO_KHZ800);
 
-#define CLK 5//pins definitions for TM1637 and can be changed to other ports
+#define CLK 5 //pins definitions for TM1637 and can be changed to other ports
 #define DIO 4
 //TM1637_6D tm1637(CLK,DIO);
 TM1637 tm1637(CLK,DIO);
-
+//TM1637TinyDisplay6 display(CLK, DIO);
 
 SwitecX25 rpm(STEPS,6,7,8,9);
 SwitecX25 speedo(STEPS,10,11,12,13);
@@ -118,7 +117,9 @@ const uint32_t morado = pixels.Color(127, 105, 255);
 
 
 int serial_byte;
-char ODOMETER[6];
+int resultado;
+int cuentakilometros;
+//char ODOMETER[6];
 
 
 
@@ -134,7 +135,23 @@ void setup()
 
   // inicializando 7 segmentos
   tm1637.init();
-  tm1637.set(BRIGHT_TYPICAL);//BRIGHT_TYPICAL = 2,BRIGHT_DARKEST = 0,BRIGHTEST = 7;
+  tm1637.set(BRIGHT_TYPICAL);//BRIGHT_TYPICAL = 2,BRIGHT_DARKEST = 0,BRIGHTEST = 7; display.setBrightness(BRIGHT_HIGH);
+
+  tm1637.display(2, 0);
+  tm1637.display(1, 0);
+  tm1637.display(0, 0);
+  tm1637.display(5, 0);
+  tm1637.display(4, 0);
+  tm1637.display(3, 0);
+
+
+  /*display.clear();
+  display.showString("digits");
+  delay(1000);
+  display.showNumber(123456);
+  delay(1000);
+  display.showNumber(123.456);
+  delay(1000);*/
 
 
   //inicializo los motores a cero
@@ -294,7 +311,7 @@ void loop()
   adblue.update();
 
 
-  if (Serial.available() < 17)
+  if (Serial.available() < 23)   // 17 si no funciona el odometro
     return;
   
   serial_byte = Serial.read();
@@ -479,8 +496,21 @@ void loop()
   }  
 
 // odometer
+  tm1637.display(2, Serial.read());
+  tm1637.display(1, Serial.read());
+  tm1637.display(0, Serial.read());
+  tm1637.display(5, Serial.read());
+  tm1637.display(4, Serial.read());
+  tm1637.display(3, Serial.read());
 
-  // Text length
+/*  display.setSegments(0, Serial.read());
+  display.setSegments(1, Serial.read());
+  display.setSegments(2, Serial.read());
+  display.setSegments(3, Serial.read());
+  display.setSegments(4, Serial.read());
+  display.setSegments(5, Serial.read());*/
+
+ /* // Text length
   int text_len = Serial.read();
   int digito[] = {2,1,0,5,4,3};
   // Followed by text
@@ -508,7 +538,7 @@ void loop()
   tm1637.display(5, ODOMETER[3]);
   tm1637.display(4, ODOMETER[4]);
   tm1637.display(3, ODOMETER[5]);
-  
+  */
   /*tm1637.display(3, 0);
   tm1637.display(4, 1);
   tm1637.display(5, 2);

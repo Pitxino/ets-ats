@@ -229,8 +229,8 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /
 
   // para tratar de que funcione el odometro en 6 bytes
 
-  //cuentakilometros = telemetry.odometer * 0.621371
-  cuentakilometros = telemetry.odometer;                                              //     259451
+  cuentakilometros = float(telemetry.odometer * 0.621371);
+  //cuentakilometros = telemetry.odometer;                                              //     259451
   resultado = int(cuentakilometros / 100000);      //     2
   PUT_BYTE(resultado);                          //  grabamos 2
   cuentakilometros = cuentakilometros - (resultado * 100000);   // cuentakilometros = 59451
