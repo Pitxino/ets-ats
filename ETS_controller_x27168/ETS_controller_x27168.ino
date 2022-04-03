@@ -87,7 +87,7 @@ SwitecX25 cruise;*/
 #define STEPS (255*3)
 #define LUZ          2 // pin rele 
 #define LEDS         3 // pin strip neopixel
-#define NUMPIXELS   49 // Popular NeoPixel ring size
+#define NUMPIXELS   50 // Popular NeoPixel ring size
 Adafruit_NeoPixel pixels(NUMPIXELS, LEDS, NEO_GRB + NEO_KHZ800);
 
 #define CLK 5 //pins definitions for TM1637 and can be changed to other ports
@@ -311,7 +311,7 @@ void loop()
   adblue.update();
 
 
-  if (Serial.available() < 23)   // 17 si no funciona el odometro
+  if (Serial.available() < 24)   
     return;
   
   serial_byte = Serial.read();
@@ -445,10 +445,62 @@ void loop()
   digitalWriteFromBit(LIGHT_BRAKE_LED, serial_byte, 1, rojo);
 
 // luz encendido salpicadero
-  if ((serial_byte >> 6) & 0x01)  // lee el valor de serial byte 3 y mira si esta activado 
-    digitalWrite(LUZ,  HIGH);
+  if ((serial_byte >> 6) & 0x01)  // lee el valor de serial byte 6 y mira si esta activado para encender las luces
+  { digitalWrite(LUZ,  HIGH);
+    pixels.setPixelColor(1, blanco);
+    pixels.setPixelColor(2, blanco);
+    pixels.setPixelColor(22, blanco);
+    pixels.setPixelColor(25, blanco);
+    pixels.setPixelColor(26, blanco);
+    pixels.setPixelColor(27, blanco);
+    pixels.setPixelColor(28, blanco);
+    pixels.setPixelColor(29, blanco);
+    pixels.setPixelColor(30, blanco);
+    pixels.setPixelColor(32, blanco);
+    pixels.setPixelColor(33, blanco);
+    pixels.setPixelColor(34, blanco);
+    pixels.setPixelColor(35, blanco);
+    pixels.setPixelColor(36, blanco);
+    pixels.setPixelColor(37, blanco);
+    pixels.setPixelColor(38, blanco);
+    pixels.setPixelColor(39, blanco);
+    pixels.setPixelColor(42, blanco);
+    pixels.setPixelColor(43, blanco);
+    pixels.setPixelColor(44, blanco);
+    pixels.setPixelColor(45, blanco);
+    pixels.setPixelColor(46, blanco);
+    pixels.setPixelColor(47, blanco);
+    pixels.setPixelColor(48, blanco);
+    pixels.setPixelColor(49, blanco);
+  }
   else  
-    digitalWrite(LUZ,  LOW); 
+  { digitalWrite(LUZ,  LOW); 
+    pixels.setPixelColor(1, negro);
+    pixels.setPixelColor(2, negro);
+    pixels.setPixelColor(22, negro);
+    pixels.setPixelColor(25, negro);
+    pixels.setPixelColor(26, negro);
+    pixels.setPixelColor(27, negro);
+    pixels.setPixelColor(28, negro);
+    pixels.setPixelColor(29, negro);
+    pixels.setPixelColor(30, negro);
+    pixels.setPixelColor(32, negro);
+    pixels.setPixelColor(33, negro);
+    pixels.setPixelColor(34, negro);
+    pixels.setPixelColor(35, negro);
+    pixels.setPixelColor(36, negro);
+    pixels.setPixelColor(37, negro);
+    pixels.setPixelColor(38, negro);
+    pixels.setPixelColor(39, negro);
+    pixels.setPixelColor(42, negro);
+    pixels.setPixelColor(43, negro);
+    pixels.setPixelColor(44, negro);
+    pixels.setPixelColor(45, negro);
+    pixels.setPixelColor(46, negro);
+    pixels.setPixelColor(47, negro);
+    pixels.setPixelColor(48, negro);
+    pixels.setPixelColor(49, negro);
+  }
    
 
 
@@ -467,33 +519,19 @@ void loop()
  
   // Enabled flags
   serial_byte = Serial.read();
+  digitalWriteFromBit(DIFERENCIAL, serial_byte, 7, amarillo);
+  digitalWriteFromBit(SUBIR_EJE_TRAILER_LED, serial_byte, 6, rojo);
+  digitalWriteFromBit(SUBIR_EJE_CAMION_LED, serial_byte, 5, rojo);
   digitalWriteFromBit(LIMPIA_LENTO_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(LIMPIA_RAPIDO_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(ADBLUE_WARNING_LED, serial_byte, 2, amarillo);
   digitalWriteFromBit(ELECTRIC_ENABLED, serial_byte, 1, blanco);
   digitalWriteFromBit(ENGINE_ENABLED_LED, serial_byte, 0, verde);
 
-  // luz encendido iconos
-  if ((serial_byte >> 1) & 0x01)  {// lee el valor de serial byte 1 y mira si esta activado 
-    pixels.setPixelColor(1, blanco);
-    pixels.setPixelColor(2, blanco);
-    pixels.setPixelColor(21, blanco);
-    pixels.setPixelColor(22, blanco);
-    pixels.setPixelColor(24, blanco);
-    for(int x = 24; x < 50; x++) {
-      pixels.setPixelColor(x, blanco);  
-    }
-  }  
-  else { 
-    pixels.setPixelColor(1, negro);
-    pixels.setPixelColor(2, negro);
-    pixels.setPixelColor(21, negro);
-    pixels.setPixelColor(22, negro);
-    pixels.setPixelColor(24, negro);
-    for(int x = 24; x < 50; x++) {
-      pixels.setPixelColor(x, negro);  
-    } 
-  }  
+
+  // Enabled flags
+  serial_byte = Serial.read();
+  digitalWriteFromBit(LUCES_PELIGRO_LED, serial_byte, 0, rojo);
 
 // odometer
   tm1637.display(2, Serial.read());

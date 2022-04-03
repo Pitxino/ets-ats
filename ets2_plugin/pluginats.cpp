@@ -122,11 +122,13 @@ struct telemetry_state_t
   float adblue_average_consumption; // Liters / KM
   float adblue_capacity; // Liters
 
-  bool wipers; // limpiaparabrisas
-  bool dashboard_backlight; // iluminacion dashboard
-//  bool lift_axle_indicator; // indicador eje levantado tractor
-//  bool trailer_lift_axle_indicator; indicacor eje levantado remolque
-//  bool differential_lock; bloqueo diferencial
+  bool  wipers; // limpiaparabrisas
+  bool  dashboard_backlight; // iluminacion dashboard
+  bool  lift_axle_indicator; // indicador eje levantado tractor
+  bool  trailer_lift_axle_indicator; // indicacor eje levantado remolque
+  bool  differential_lock; // bloqueo diferencial
+  bool  hazard_waning; // señales de peligro
+
 } telemetry;
 
 
@@ -147,7 +149,7 @@ void send_empty_packet()
   packet[0] = PACKET_SYNC;
   packet[1] = PACKET_VER;
   
-  serial_port.write(packet, 23);// si no funcioona odometer aqui 17
+  serial_port.write(packet, 24);
 }
 
 
@@ -205,32 +207,33 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /
   
   // Pack data for LEDs into bytes
   
-  // Truck lights
-  //BOOKMARK
+ 
   PUT_BYTE(PACKBOOL(
     telemetry.light_beacon, telemetry.light_parking,
     telemetry.light_lblinker, telemetry.light_rblinker, 
     telemetry.light_low_beam, telemetry.light_high_beam,
     telemetry.light_brake, telemetry.light_reverse));
     
-  // Warning lights
+ 
   PUT_BYTE(PACKBOOL(
     telemetry.parking_brake, telemetry.motor_brake,
     telemetry.brake_air_pressure_warning, telemetry.brake_air_pressure_emergency,
     telemetry.fuel_warning, telemetry.battery_voltage_warning,
     telemetry.oil_pressure_warning, telemetry.water_temperature_warning));
-  
-  // Enabled flags
+ 
   PUT_BYTE(PACKBOOL(
-    0,0,0,telemetry.dashboard_backlight,
-    telemetry.wipers, telemetry.adblue_warning,
+    telemetry.differential_lock, telemetry.trailer_lift_axle_indicator, telemetry.lift_axle_indicator,
+    telemetry.dashboard_backlight, telemetry.wipers, telemetry.adblue_warning,
     telemetry.electric_enabled, telemetry.engine_enabled));
     
+  PUT_BYTE(PACKBOOL(
+    0, 0, 0, 0, 0, 0, 0, telemetry.hazard_waning));
+
 
   // para tratar de que funcione el odometro en 6 bytes
 
-  cuentakilometros = float(telemetry.odometer * 0.621371);
-  //cuentakilometros = telemetry.odometer;                                              //     259451
+  cuentakilometros = telemetry.odometer * 0.621371;        //   Esto se habilita en el american truck y se deshabilita la siguiente linea
+  //cuentakilometros = telemetry.odometer;                    //     259451
   resultado = int(cuentakilometros / 100000);      //     2
   PUT_BYTE(resultado);                          //  grabamos 2
   cuentakilometros = cuentakilometros - (resultado * 100000);   // cuentakilometros = 59451
