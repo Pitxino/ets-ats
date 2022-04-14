@@ -127,7 +127,7 @@ struct telemetry_state_t
   bool  lift_axle_indicator; // indicador eje levantado tractor
   bool  trailer_lift_axle_indicator; // indicacor eje levantado remolque
   bool  differential_lock; // bloqueo diferencial
-  bool  hazard_waning; // señales de peligro
+  bool  hazard_warning; // señales de peligro
 
 } telemetry;
 
@@ -165,8 +165,8 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /
 
     last_update = now;
 
-    const float speed_mph = telemetry.speed * METERS_PER_SEC_TO_MILES_PER_HOUR;
-    const float speed_kph = telemetry.speed * METERS_PER_SEC_TO_KM_PER_HOUR;
+    //const float speed_mph = telemetry.speed * METERS_PER_SEC_TO_MILES_PER_HOUR;
+    //const float speed_kph = telemetry.speed * METERS_PER_SEC_TO_KM_PER_HOUR;
 
     const float fuel_ratio = telemetry.fuel / telemetry.fuel_capacity;
     const float adblue_ratio = telemetry.adblue / telemetry.adblue_capacity;
@@ -227,12 +227,12 @@ SCSAPI_VOID telemetry_frame_end(const scs_event_t /*event*/, const void* const /
     telemetry.electric_enabled, telemetry.engine_enabled));
     
   PUT_BYTE(PACKBOOL(
-    0, 0, 0, 0, 0, 0, 0, telemetry.hazard_waning));
+    0, 0, 0, 0, 0, 0, 0, telemetry.hazard_warning));
 
 
   // para tratar de que funcione el odometro en 6 bytes
 
-  cuentakilometros = telemetry.odometer * 0.621371;        //   Esto se habilita en el american truck y se deshabilita la siguiente linea
+  cuentakilometros = telemetry.odometer * 0.621371f;        //   Esto se habilita en el american truck y se deshabilita la siguiente linea
   //cuentakilometros = telemetry.odometer;                    //     259451
   resultado = int(cuentakilometros / 100000);      //     2
   PUT_BYTE(resultado);                          //  grabamos 2
@@ -578,6 +578,14 @@ SCSAPI_RESULT scs_telemetry_init(const scs_u32_t version, const scs_telemetry_in
   REG_CHAN(adblue_warning,                bool);
   REG_CHAN(wipers,                        bool);
 //  REG_CHAN(dashboard_backlight,           float);
+  REG_CHAN(lift_axle_indicator,           bool);
+  REG_CHAN(trailer_lift_axle_indicator,   bool);
+  REG_CHAN(differential_lock,             bool);
+  REG_CHAN(hazard_warning,                 bool);
+
+
+
+
 
 
   if (!registered)
