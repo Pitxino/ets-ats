@@ -156,25 +156,29 @@ void setup()
 
   //inicializo los motores a cero
   rpm.zero();
-  speedo.zero();
-  oiltemp.zero();
-  batteryvolt.zero();
-  oilpress.zero();
-  fuel.zero();
-  adblue.zero();
-  watertemp.zero();
-  braketemp.zero();
-  brakeairpress.zero();
   rpm.update();
+  speedo.zero();
   speedo.update();
+  oiltemp.zero();
   oiltemp.update();
+  batteryvolt.zero();
   batteryvolt.update();
+  oilpress.zero();
   oilpress.update();
+  fuel.zero();
   fuel.update();
+  adblue.zero();
   adblue.update();
+  watertemp.zero();
   watertemp.update();
+  braketemp.zero();
   braketemp.update();
+  brakeairpress.zero();
   brakeairpress.update();
+
+
+
+
 
   // Initialise LEDs
   pixels.fill(blanco);
@@ -206,31 +210,31 @@ void setup()
     delay(5);
   }*/
     rpm.setPosition(749);
-    speedo.setPosition(749);
-    oiltemp.setPosition(749);
-    batteryvolt.setPosition(749);
-    oilpress.setPosition(749);
-    fuel.setPosition(749);
-    adblue.setPosition(749);
-    watertemp.setPosition(749);
-    braketemp.setPosition(749);
-    brakeairpress.setPosition(749);
     rpm.updateBlocking();
+    speedo.setPosition(749);
     speedo.updateBlocking();
+    oiltemp.setPosition(749);
     oiltemp.updateBlocking();
+    batteryvolt.setPosition(749);
     batteryvolt.updateBlocking();
+    oilpress.setPosition(749);
     oilpress.updateBlocking();
+    fuel.setPosition(749);
     fuel.updateBlocking();
+    adblue.setPosition(749);
     adblue.updateBlocking();
+    watertemp.setPosition(749);
     watertemp.updateBlocking();
+    braketemp.setPosition(749);
     braketemp.updateBlocking();
+    brakeairpress.setPosition(749);
     brakeairpress.updateBlocking();
-    delay(1000);
+//    delay(1000);
 
 
 
 
-  delay(2000);
+//  delay(2000);
   
 /*  for (int s=STEPS; s>0;s--){
     rpm.setPosition(s);
@@ -257,28 +261,27 @@ void setup()
   }*/
 
   rpm.zero();
-  speedo.zero();
-  oiltemp.zero();
-  batteryvolt.zero();
-  oilpress.zero();
-  fuel.zero();
-  adblue.zero();
-  watertemp.zero();
-  braketemp.zero();
-  brakeairpress.zero();
   rpm.update();
+  speedo.zero();
   speedo.update();
+  oiltemp.zero();
   oiltemp.update();
+  batteryvolt.zero();
   batteryvolt.update();
+  oilpress.zero();
   oilpress.update();
+  fuel.zero();
   fuel.update();
+  adblue.zero();
   adblue.update();
+  watertemp.zero();
   watertemp.update();
+  braketemp.zero();
   braketemp.update();
+  brakeairpress.zero();
   brakeairpress.update();
   
 
-  delay(1000);
   pixels.fill(rojo);
   pixels.show();
   delay(1000);
