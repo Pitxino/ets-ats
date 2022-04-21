@@ -2,9 +2,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <SwitecX25.h>
-//#include "TM1637_6D.h"
 #include "TM1637.h"
-//#include <TM1637TinyDisplay6.h>
 
 
 // leds 1
@@ -65,18 +63,6 @@ const int PUERTA_1_LED                   =49;
 const int ELECTRIC_ENABLED               = 0; // switch encendido o apagado
 
 
-/*// defines servo names
-SwitecX25 rpm;
-SwitecX25 speedo;
-SwitecX25 oiltemp;
-SwitecX25 batteryvolt;
-SwitecX25 oilpress;
-SwitecX25 fuel;
-SwitecX25 adblue;
-SwitecX25 watertemp;
-SwitecX25 braketemp;
-SwitecX25 brakeairpress;
-SwitecX25 cruise;*/
 
 #define PACKET_SYNC 0xFF
 #define PACKET_VER  2
@@ -92,9 +78,7 @@ Adafruit_NeoPixel pixels(NUMPIXELS, LEDS, NEO_GRB + NEO_KHZ800);
 
 #define CLK 5 //pins definitions for TM1637 and can be changed to other ports
 #define DIO 4
-//TM1637_6D tm1637(CLK,DIO);
 TM1637 tm1637(CLK,DIO);
-//TM1637TinyDisplay6 display(CLK, DIO);
 
 SwitecX25 rpm(STEPS,6,7,8,9);
 SwitecX25 speedo(STEPS,10,11,12,13);
@@ -119,7 +103,6 @@ const uint32_t morado = pixels.Color(127, 105, 255);
 int serial_byte;
 int resultado;
 int cuentakilometros;
-//char ODOMETER[6];
 
 
 
@@ -144,14 +127,6 @@ void setup()
   tm1637.display(4, 0);
   tm1637.display(3, 0);
 
-
-  /*display.clear();
-  display.showString("digits");
-  delay(1000);
-  display.showNumber(123456);
-  delay(1000);
-  display.showNumber(123.456);
-  delay(1000);*/
 
 
   //inicializo los motores a cero
@@ -186,29 +161,6 @@ void setup()
   
   delay(500);
   
-/*  for (int s=0; s<STEPS;s++){
-    rpm.setPosition(s);
-    speedo.setPosition(s);
-    oiltemp.setPosition(s);
-    batteryvolt.setPosition(s);
-    oilpress.setPosition(s);
-    fuel.setPosition(s);
-    adblue.setPosition(s);
-    watertemp.setPosition(s);
-    braketemp.setPosition(s);
-    brakeairpress.setPosition(s);
-    rpm.update();
-    speedo.update();
-    oiltemp.update();
-    batteryvolt.update();
-    oilpress.update();
-    fuel.update();
-    adblue.update();
-    watertemp.update();
-    braketemp.update();
-    brakeairpress.update();
-    delay(5);
-  }*/
     rpm.setPosition(749);
     rpm.updateBlocking();
     speedo.setPosition(749);
@@ -229,36 +181,7 @@ void setup()
     braketemp.updateBlocking();
     brakeairpress.setPosition(749);
     brakeairpress.updateBlocking();
-//    delay(1000);
 
-
-
-
-//  delay(2000);
-  
-/*  for (int s=STEPS; s>0;s--){
-    rpm.setPosition(s);
-    speedo.setPosition(s);
-    oiltemp.setPosition(s);
-    batteryvolt.setPosition(s);
-    oilpress.setPosition(s);
-    fuel.setPosition(s);
-    adblue.setPosition(s);
-    watertemp.setPosition(s);
-    braketemp.setPosition(s);
-    brakeairpress.setPosition(s);
-    rpm.update();
-    speedo.update();
-    oiltemp.update();
-    batteryvolt.update();
-    oilpress.update();
-    fuel.update();
-    adblue.update();
-    watertemp.update();
-    braketemp.update();
-    brakeairpress.update();
-    delay(5);
-  }*/
 
   rpm.zero();
   rpm.update();
@@ -406,37 +329,6 @@ void loop()
   batteryvolt.update();
   adblue.update();
 
-
-
-
-
-
-/*read_serial_byte_set_servo(rpm, SERVO_DIR_INVERT); // RPM
-  read_serial_byte_set_servo(speedo, SERVO_DIR_INVERT); // Speed  
-  read_serial_byte_set_servo(oiltemp, SERVO_DIR_INVERT); // Oil temperature
-  read_serial_byte_set_servo(batteryvolt, SERVO_DIR_INVERT); // Battery voltage
-  read_serial_byte_set_servo(oilpress, SERVO_DIR_INVERT); // Oil pressure
-  read_serial_byte_set_servo(fuel, SERVO_DIR_INVERT); // Fuel ratio
-  read_serial_byte_set_servo(adblue, SERVO_DIR_INVERT); //adblue ratio
-  read_serial_byte_set_servo(watertemp, SERVO_DIR_INVERT); // Water temperature
-  read_serial_byte_set_servo(braketemp,SERVO_DIR_INVERT); // Brake temperature
-  read_serial_byte_set_servo(brakeairpress,SERVO_DIR_INVERT); // Brake air pressure
-  read_serial_byte_set_servo_cruise(cruise, SERVO_DIR_INVERT); // cruise speed, set to trip a light */ 
-
-
-/*
-  if (cruise.read() < 180)
-      {
-      digitalWrite(CRUISE_CONTROL, 1);
-      }
-  if (cruise.read() > 179)
-      {
-      digitalWrite(CRUISE_CONTROL, 0);
-      }*/
-
-
-
-
   
   // Truck lights byte
   serial_byte = Serial.read();
@@ -544,52 +436,6 @@ void loop()
   tm1637.display(4, Serial.read());
   tm1637.display(3, Serial.read());
 
-/*  display.setSegments(0, Serial.read());
-  display.setSegments(1, Serial.read());
-  display.setSegments(2, Serial.read());
-  display.setSegments(3, Serial.read());
-  display.setSegments(4, Serial.read());
-  display.setSegments(5, Serial.read());*/
-
- /* // Text length
-  int text_len = Serial.read();
-  int digito[] = {2,1,0,5,4,3};
-  // Followed by text
-  if (0 < text_len && text_len < 127)
-  {
-    for (int i = 0; i < text_len; ++i)
-    {
-      while (Serial.available() == 0) // Wait for data if slow
-      {
-        delay(2);
-      }
-      serial_byte = Serial.read();
-      if (serial_byte < 0 && serial_byte > 127)
-        return;
-      
-      if (serial_byte != '\n')
-        tm1637.display(digito[i], serial_byte);
-//      delay(2);
-    }
-  }
-
-  tm1637.display(2, ODOMETER[0]);
-  tm1637.display(1, ODOMETER[1]);
-  tm1637.display(0, ODOMETER[2]);
-  tm1637.display(5, ODOMETER[3]);
-  tm1637.display(4, ODOMETER[4]);
-  tm1637.display(3, ODOMETER[5]);
-  */
-  /*tm1637.display(3, 0);
-  tm1637.display(4, 1);
-  tm1637.display(5, 2);
-  tm1637.display(0, 3);
-  tm1637.display(1, 4);
-  tm1637.display(2, 6);*/
-
-
-  // Text length
-  //int text_len = Serial.read();
   
   pixels.show();
 
@@ -610,28 +456,6 @@ void loop()
 
 
 
-/*
-void read_serial_byte_set_servo(Servo& servo, bool invert)
-{
-  serial_byte = Serial.read();
-  serial_byte = (serial_byte < 0) ? 0 : ((serial_byte > 250) ? 250 : serial_byte);
-  if (invert)
-    SwitecX25.setPosition((250 - serial_byte)*3);
-    SwitecX25.update();
-  else
-    SwitecX25.setPosition(serial_byte*3);
-    SwitecX25.update();
-}
-
-void read_serial_byte_set_servo_cruise(Servo& servo, bool invert)
-{
-  serial_byte = Serial.read();
-  serial_byte = (serial_byte < 0) ? 0 : ((serial_byte > 180) ? 180: serial_byte);
-  if (invert)
-    servo.write(180 - serial_byte); //set lower than the tach and speedo to limit movement.
-  else
-    servo.write(serial_byte);
-}*/
 
 void skip_serial_byte()
 {
