@@ -80,8 +80,8 @@ Adafruit_NeoPixel pixels(NUMPIXELS, LEDS, NEO_GRB + NEO_KHZ800);
 #define DIO 4
 TM1637 tm1637(CLK,DIO);
 
-SwitecX25 rpm(STEPS,6,7,8,9);
-SwitecX25 speedo(STEPS,10,11,12,13);
+SwitecX25 speedo(STEPS,6,7,8,9);
+SwitecX25 rpm(STEPS,10,11,12,13);
 SwitecX25 oiltemp(STEPS,22,23,24,25);
 SwitecX25 batteryvolt(STEPS,26,27,28,29);
 SwitecX25 oilpress(STEPS,30,31,32,33);
@@ -159,20 +159,20 @@ void setup()
   pixels.fill(blanco);
   pixels.show();
   
-  delay(500);
+  //delay(500);
   
-    rpm.setPosition(749);
-    rpm.updateBlocking();
-    speedo.setPosition(749);
-    speedo.updateBlocking();
     oiltemp.setPosition(749);
     oiltemp.updateBlocking();
     batteryvolt.setPosition(749);
     batteryvolt.updateBlocking();
     oilpress.setPosition(749);
     oilpress.updateBlocking();
+    rpm.setPosition(749);
+    rpm.updateBlocking();
     fuel.setPosition(749);
     fuel.updateBlocking();
+    speedo.setPosition(749);
+    speedo.updateBlocking();
     adblue.setPosition(749);
     adblue.updateBlocking();
     watertemp.setPosition(749);
@@ -183,18 +183,18 @@ void setup()
     brakeairpress.updateBlocking();
 
 
-  rpm.zero();
-  rpm.update();
-  speedo.zero();
-  speedo.update();
   oiltemp.zero();
   oiltemp.update();
   batteryvolt.zero();
   batteryvolt.update();
   oilpress.zero();
   oilpress.update();
+  rpm.zero();
+  rpm.update();
   fuel.zero();
   fuel.update();
+  speedo.zero();
+  speedo.update();
   adblue.zero();
   adblue.update();
   watertemp.zero();
@@ -277,7 +277,7 @@ void loop()
 // luz temperatura frenos
   if (serial_byte > 230)  // braketemp lee el valor del servo y como es inverso hay que 
     pixels.setPixelColor(BRAKE_TEMPERATURE_LED, rojo);  
-  else
+  else  
     pixels.setPixelColor(BRAKE_TEMPERATURE_LED, negro);
 
   serial_byte = Serial.read();
@@ -404,7 +404,7 @@ void loop()
   serial_byte = Serial.read();  
   digitalWriteFromBit(PARKING_BRAKE_LED, serial_byte, 7, rojo);
   digitalWriteFromBit(MOTOR_BRAKE_LED, serial_byte, 6, rojo);
-  digitalWriteFromBit(BRAKE_AIR_PRESSURE_WARNING_LED, serial_byte, 5, rojo);
+  digitalWriteFromBit(BRAKE_AIR_PRESSURE_WARNING_LED, serial_byte, 5, verde);
   digitalWriteFromBit(BRAKE_AIR_PRESSURE_EMERGENCY_LED, serial_byte, 4, rojo);
   digitalWriteFromBit(FUEL_WARNING_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(BATTERY_VOLTAGE_WARNING_LED, serial_byte, 2, rojo); 
@@ -421,7 +421,7 @@ void loop()
   digitalWriteFromBit(LIMPIA_RAPIDO_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(ADBLUE_WARNING_LED, serial_byte, 2, amarillo);
   digitalWriteFromBit(ELECTRIC_ENABLED, serial_byte, 1, blanco);
-  digitalWriteFromBit(ENGINE_ENABLED_LED, serial_byte, 0, verde);
+  digitalWriteFromBit(ENGINE_ENABLED_LED, serial_byte, 0, rojo);
 
 
   // Enabled flags
