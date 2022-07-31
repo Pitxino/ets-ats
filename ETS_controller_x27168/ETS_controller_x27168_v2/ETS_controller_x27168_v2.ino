@@ -166,31 +166,17 @@ void setup()
   tm1637.display(3, 0);
 
 
-
   //inicializo los motores a cero
-  /*rpm.zero();
-  rpm.update();
-  speedo.zero();
-  speedo.update();
   oiltemp.zero();
-  oiltemp.update();
   batteryvolt.zero();
-  batteryvolt.update();
   oilpress.zero();
-  oilpress.update();
+  rpm.zero();
   fuel.zero();
-  fuel.update();
+  speedo.zero();
   adblue.zero();
-  adblue.update();
   watertemp.zero();
-  watertemp.update();
   braketemp.zero();
-  braketemp.update();
   brakeairpress.zero();
-  brakeairpress.update();*/
-
-
-
 
 
   // Initialise LEDs
@@ -221,26 +207,18 @@ void setup()
     brakeairpress.updateBlocking();
 
 
-  oiltemp.zero();
-  oiltemp.update();
-  batteryvolt.zero();
-  batteryvolt.update();
-  oilpress.zero();
-  oilpress.update();
-  rpm.zero();
-  rpm.update();
-  fuel.zero();
-  fuel.update();
-  speedo.zero();
-  speedo.update();
-  adblue.zero();
-  adblue.update();
-  watertemp.zero();
-  watertemp.update();
-  braketemp.zero();
-  braketemp.update();
   brakeairpress.zero();
-  brakeairpress.update();
+  braketemp.zero();
+  watertemp.zero();
+  adblue.zero();
+  speedo.zero();
+  fuel.zero();
+  rpm.zero();
+  oilpress.zero();
+  batteryvolt.zero();
+  oiltemp.zero();
+
+
   
 
   pixels.fill(rojo);
@@ -256,6 +234,16 @@ void setup()
   pixels.show();
   digitalWrite(LUZ,  LOW); 
 // mostrar algo en 7 segmentos
+  for(int i = 0; i <= 9; i++)
+  {
+    tm1637.display(2, i);
+    tm1637.display(1, i);
+    tm1637.display(0, i);
+    tm1637.display(5, i);
+    tm1637.display(4, i);
+    tm1637.display(3, i);
+    delay(100);
+  }   
   
 
 }
@@ -478,7 +466,7 @@ void loop()
   digitalWriteFromBit(PARKING_BRAKE_LED, serial_byte, 7, rojo);
   digitalWriteFromBit(MOTOR_BRAKE_LED, serial_byte, 6, rojo);
   digitalWriteFromBit(BRAKE_AIR_PRESSURE_WARNING_LED, serial_byte, 5, rojo);
-  digitalWriteFromBit(BRAKE_AIR_PRESSURE_EMERGENCY_LED, serial_byte, 4, azul);
+  digitalWriteFromBit(BRAKE_AIR_PRESSURE_EMERGENCY_LED, serial_byte, 4, rojo);
   digitalWriteFromBit(FUEL_WARNING_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(BATTERY_VOLTAGE_WARNING_LED, serial_byte, 2, rojo); 
   digitalWriteFromBit(OIL_PRESSURE_WARNING_LED, serial_byte, 1, rojo); 
@@ -508,7 +496,19 @@ void loop()
   // Enabled flags
   serial_byte = Serial.read();
   contenido_luces_peligro_led = serial_byte >> 0; 
-  digitalWriteFromBit(LUCES_PELIGRO_LED, serial_byte, 0, rojo);
+  if (contenido_light_lblinker_led and contenido_light_rblinker_led)
+     digitalWriteFromBit(LUCES_PELIGRO_LED, serial_byte, 0, rojo);
+  else if (contenido_light_parking_led)
+         {
+            pixels.setPixelColor(LUCES_PELIGRO_LED, azul);
+            pixels.show();
+         }  
+       else
+          {
+            pixels.setPixelColor(LUCES_PELIGRO_LED, negro);  
+            pixels.show();
+          }
+
 
 // odometer
   tm1637.display(2, Serial.read());

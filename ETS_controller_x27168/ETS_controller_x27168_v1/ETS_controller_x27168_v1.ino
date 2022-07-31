@@ -344,6 +344,7 @@ void loop()
   { digitalWrite(LUZ,  HIGH);
     pixels.setPixelColor(1, blanco);
     pixels.setPixelColor(2, blanco);
+    pixels.setPixelColor(6, blanco);
     pixels.setPixelColor(22, blanco);
     pixels.setPixelColor(25, blanco);
     pixels.setPixelColor(26, blanco);
@@ -372,6 +373,7 @@ void loop()
   { digitalWrite(LUZ,  LOW); 
     pixels.setPixelColor(1, negro);
     pixels.setPixelColor(2, negro);
+    pixels.setPixelColor(6, negro);
     pixels.setPixelColor(22, negro);
     pixels.setPixelColor(25, negro);
     pixels.setPixelColor(26, negro);
@@ -404,7 +406,7 @@ void loop()
   serial_byte = Serial.read();  
   digitalWriteFromBit(PARKING_BRAKE_LED, serial_byte, 7, rojo);
   digitalWriteFromBit(MOTOR_BRAKE_LED, serial_byte, 6, rojo);
-  digitalWriteFromBit(BRAKE_AIR_PRESSURE_WARNING_LED, serial_byte, 5, verde);
+  digitalWriteFromBit(BRAKE_AIR_PRESSURE_WARNING_LED, serial_byte, 5, rojo);
   digitalWriteFromBit(BRAKE_AIR_PRESSURE_EMERGENCY_LED, serial_byte, 4, rojo);
   digitalWriteFromBit(FUEL_WARNING_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(BATTERY_VOLTAGE_WARNING_LED, serial_byte, 2, rojo); 
@@ -421,7 +423,7 @@ void loop()
   digitalWriteFromBit(LIMPIA_RAPIDO_LED, serial_byte, 3, amarillo);
   digitalWriteFromBit(ADBLUE_WARNING_LED, serial_byte, 2, amarillo);
   digitalWriteFromBit(ELECTRIC_ENABLED, serial_byte, 1, blanco);
-  digitalWriteFromBit(ENGINE_ENABLED_LED, serial_byte, 0, rojo);
+  digitalWriteFromBit(ENGINE_ENABLED_LED, serial_byte, 0, verde);
 
 
   // Enabled flags
