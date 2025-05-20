@@ -1,4 +1,7 @@
-
+/*
+    Autor Pitxino
+    programa para salpicadero arduino
+*/
 
 #include <Adafruit_NeoPixel.h>
 #include <SwitecX25.h>
@@ -183,7 +186,7 @@ void setup()
   pixels.fill(blanco);
   pixels.show();
   
-  delay(500);
+  // delay(500);
   
     oiltemp.setPosition(749);
     oiltemp.updateBlocking();
@@ -223,13 +226,13 @@ void setup()
 
   pixels.fill(rojo);
   pixels.show();
-  delay(1000);
+  delay(500);
   pixels.fill(verde);
   pixels.show();
-  delay(1000);
+  delay(500);
   pixels.fill(azul);
   pixels.show();
-  delay(1000);
+  delay(500);
   pixels.fill(negro);
   pixels.show();
   digitalWrite(LUZ,  LOW); 
@@ -242,7 +245,7 @@ void setup()
     tm1637.display(5, i);
     tm1637.display(4, i);
     tm1637.display(3, i);
-    delay(100);
+    delay(50);
   }   
   
 
